@@ -15,4 +15,7 @@ export interface IUser {
   favoriteFruit: string,
 }
 
-export type UsersModel = IUser[]
+export interface IUsers {
+  users: IUser[];
+  usersCount: number;
+}

@@ -1,1 +1,19 @@
-<st-users-table></st-users-table>
+<div class="container">
+  @let users = users$ | async;
+
+
+  <input
+    stInput
+    type="text"
+    placeholder="Search users"
+  >
+
+  @defer (when users) {
+    <st-users-table [usersData]="users"></st-users-table>
+  }
+
+  @placeholder {
+    <st-progress-spinner />
+  }
+
+</div>

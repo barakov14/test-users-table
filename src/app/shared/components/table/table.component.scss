@@ -1,24 +1,76 @@
-$table-border-color: #e0e0e0;
-$table-header-bg: #f5f5f5;
-$table-row-hover-bg: #f9f9f9;
+$table-header-bg: #f8f9fa;
+$table-header-color: #495057;
+$table-row-bg: #ffffff;
+$table-row-alt-bg: #f8f9fa;
+$table-row-hover-bg: #e9ecef;
+$table-border-color: #dee2e6;
+$table-border-radius: 10px;
+$table-shadow-color: rgba(0, 0, 0, 0.05);
 
-.minimal-table {
+:host {
+  display: block;
   width: 100%;
-  border-collapse: collapse;
+  overflow-x: auto;
+  margin: 20px 0;
+  border-radius: $table-border-radius;
+  box-shadow: 0 2px 8px $table-shadow-color;
 
-  th, td {
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid $table-border-color;
-    transition: background-color 0.3s;
-  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #ffffff;
+    border-radius: $table-border-radius;
+    overflow: hidden;
 
-  th {
-    background-color: $table-header-bg;
-    font-weight: bold;
-  }
+    thead {
+      background-color: $table-header-bg;
+      color: $table-header-color;
 
-  tr:hover {
-    background-color: $table-row-hover-bg;
+      th {
+        padding: 12px 20px;
+        text-align: left;
+        border-bottom: 1px solid $table-border-color;
+        font-weight: 600;
+        font-size: 16px;
+        letter-spacing: 0.5px;
+      }
+    }
+
+    tbody {
+      tr {
+        &:nth-child(odd) {
+          background-color: $table-row-bg;
+        }
+
+        &:nth-child(even) {
+          background-color: $table-row-alt-bg;
+        }
+
+        &:hover {
+          background-color: $table-row-hover-bg;
+        }
+
+        td {
+          padding: 12px 20px;
+          border-bottom: 1px solid $table-border-color;
+          text-align: left;
+          font-size: 14px;
+          color: #495057;
+        }
+      }
+    }
+
+    tfoot {
+      background-color: $table-header-bg;
+      color: $table-header-color;
+
+      td {
+        padding: 12px 20px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 16px;
+        border-top: 1px solid $table-border-color;
+      }
+    }
   }
 }

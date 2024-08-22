@@ -7,7 +7,7 @@ export const usersMockInterceptor = (
   next: HttpHandlerFn
 ): Observable<HttpEvent<any>> => {
   if(request.url.endsWith('/api/users')) {
-    return of(new HttpResponse({ status: 200, body: usersMock })).pipe(
+    return of(new HttpResponse({ status: 200, body: {users: usersMock, usersCount: usersMock.length} })).pipe(
       delay(1000) /* Задержка http запроса на 1s */
     )
   }
