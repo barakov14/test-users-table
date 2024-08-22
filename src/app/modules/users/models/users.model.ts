@@ -14,3 +14,5 @@ export interface IUser {
   tags: string[],
   favoriteFruit: string,
 }
+
+export type UsersModel = IUser[]
