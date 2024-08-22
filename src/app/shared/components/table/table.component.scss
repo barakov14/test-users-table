@@ -7,70 +7,61 @@ $table-border-color: #dee2e6;
 $table-border-radius: 10px;
 $table-shadow-color: rgba(0, 0, 0, 0.05);
 
-:host {
-  display: block;
+table {
   width: 100%;
-  overflow-x: auto;
-  margin: 20px 0;
+  border-collapse: collapse;
+  background-color: #ffffff;
   border-radius: $table-border-radius;
-  box-shadow: 0 2px 8px $table-shadow-color;
+  overflow: hidden;
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    background-color: #ffffff;
-    border-radius: $table-border-radius;
-    overflow: hidden;
+  thead {
+    background-color: $table-header-bg;
+    color: $table-header-color;
 
-    thead {
-      background-color: $table-header-bg;
-      color: $table-header-color;
-
-      th {
-        padding: 12px 20px;
-        text-align: left;
-        border-bottom: 1px solid $table-border-color;
-        font-weight: 600;
-        font-size: 16px;
-        letter-spacing: 0.5px;
-      }
+    th {
+      padding: 12px 20px;
+      text-align: left;
+      border-bottom: 1px solid $table-border-color;
+      font-weight: 600;
+      font-size: 16px;
+      letter-spacing: 0.5px;
     }
+  }
 
-    tbody {
-      tr {
-        &:nth-child(odd) {
-          background-color: $table-row-bg;
-        }
-
-        &:nth-child(even) {
-          background-color: $table-row-alt-bg;
-        }
-
-        &:hover {
-          background-color: $table-row-hover-bg;
-        }
-
-        td {
-          padding: 12px 20px;
-          border-bottom: 1px solid $table-border-color;
-          text-align: left;
-          font-size: 14px;
-          color: #495057;
-        }
+  tbody {
+    tr {
+      &:nth-child(odd) {
+        background-color: $table-row-bg;
       }
-    }
 
-    tfoot {
-      background-color: $table-header-bg;
-      color: $table-header-color;
+      &:nth-child(even) {
+        background-color: $table-row-alt-bg;
+      }
+
+      &:hover {
+        background-color: $table-row-hover-bg;
+      }
 
       td {
         padding: 12px 20px;
+        border-bottom: 1px solid $table-border-color;
         text-align: left;
-        font-weight: 600;
-        font-size: 16px;
-        border-top: 1px solid $table-border-color;
+        font-size: 14px;
+        color: #495057;
       }
+    }
+  }
+
+  tfoot {
+    background-color: $table-header-bg;
+    color: $table-header-color;
+
+    td {
+      padding: 12px 20px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 16px;
+      border-top: 1px solid $table-border-color;
     }
   }
 }

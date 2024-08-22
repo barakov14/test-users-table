@@ -11,10 +11,10 @@
     </tr>
   </ng-container>
   <ng-container table-body>
-    @for(user of usersData?.users; track user._id) {
+    @for(user of users; track user._id) {
       <tr>
         <td>{{ user._id }}</td>
-        <td>{{ user.name.first }} {{ user.name.last }}</td>
+        <td>{{ user.name?.first || '' }} {{ user.name?.last || '' }}</td>
         <td>{{ user.age }}</td>
         <td>{{ user.company }}</td>
         <td>{{ user.email }}</td>
@@ -26,6 +26,5 @@
         <td colspan="7">No users available</td>
       </tr>
     }
-    <!-- Add more rows as needed -->
   </ng-container>
 </st-table>

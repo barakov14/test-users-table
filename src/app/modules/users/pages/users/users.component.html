@@ -1,15 +1,12 @@
 <div class="container">
-  @let users = users$ | async;
-
-
   <input
     stInput
     type="text"
     placeholder="Search users"
   >
 
-  @defer (when users) {
-    <st-users-table [usersData]="users"></st-users-table>
+  @defer (when usersLoaded()) {
+    <st-users-table [users]="users"></st-users-table>
   }
 
   @placeholder {

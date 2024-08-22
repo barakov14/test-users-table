@@ -2,11 +2,11 @@ export interface IUser {
   _id: string,
   isActive: boolean,
   balance: string,
-  picture: string,
+  picture?: string,
   age: number,
-  name: {
+  name?: {
     first: string,
-    last: string,
+    last: string ,
   },
   company: string,
   email: string,
@@ -16,6 +16,8 @@ export interface IUser {
 }
 
 export interface IUsers {
-  users: IUser[];
+  users: UsersModel;
   usersCount: number;
 }
+
+export type UsersModel = IUser[]
