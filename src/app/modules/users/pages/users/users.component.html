@@ -1,17 +1,26 @@
 <div class="container">
-  <input
-    stInput
-    type="text"
-    placeholder="Search users"
-    [formControl]="searchUsersTerm"
-  >
+  <div class="row">
+    <input
+      stInput
+      class="search-input"
+      type="text"
+      placeholder="Search users by their name or surname"
+      [formControl]="searchUsersTerm"
+    >
+    <p class="users-count">{{ usersCount }} users found.</p>
+  </div>
 
   @defer (when usersLoaded()) {
-    <st-users-table [users]="users()"></st-users-table>
+    <st-users-table
+      [users]="users()"
+      (sortUsers)="sortUsersByAge()"
+    />
   }
 
   @placeholder {
-    <st-progress-spinner />
+    <div class="progress-spinner">
+      <st-progress-spinner />
+    </div>
   }
 
 </div>

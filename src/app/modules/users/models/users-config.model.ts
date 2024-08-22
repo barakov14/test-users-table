@@ -1,5 +1,6 @@
 export interface UsersConfig {
   filters: {
-    searchTermByName?: string
+    searchTermByName?: string;
+    age?: string;
   }
 }

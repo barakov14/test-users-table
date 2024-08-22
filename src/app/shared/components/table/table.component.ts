@@ -7,8 +7,7 @@ import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/co
   templateUrl: './table.component.html',
   styleUrl: './table.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  encapsulation: ViewEncapsulation.ShadowDom
+  // encapsulation: ViewEncapsulation.ShadowDom
 })
 export class TableComponent {
-
 }

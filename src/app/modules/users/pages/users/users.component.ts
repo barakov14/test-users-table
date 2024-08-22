@@ -5,7 +5,7 @@ import {AsyncPipe} from "@angular/common";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {ProgressSpinnerComponent} from "../../../../shared/components/progress-spinner/progress-spinner.component";
 import {InputDirective} from "../../../../shared/directives/input/input.directive";
-import {UsersModel} from "../../models/users.model";
+import {IUser, UsersModel} from "../../models/users.model";
 import {FormControl, ReactiveFormsModule} from "@angular/forms";
 import {debounceTime, filter, Observable, switchMap} from "rxjs";
 import {UsersConfig} from "../../models/users-config.model";
@@ -29,10 +29,14 @@ export class UsersComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
 
   listConfig: UsersConfig = {
-    filters: {}
+    filters: {
+      searchTermByName: '',
+      age: 'asc'
+    }
   };
 
   users= signal<UsersModel>([]);
+
   usersCount: number = 0;
 
   searchUsersTerm = new FormControl('') as FormControl<string>;
@@ -52,7 +56,8 @@ export class UsersComponent implements OnInit {
         this.users.set(res.users)
         this.usersCount = res.usersCount;
         this.usersLoaded.set(true);
-      }
+      },
+      error: err => console.log('error', err)
     });
   }
 
@@ -68,5 +73,14 @@ export class UsersComponent implements OnInit {
           this.usersLoaded.set(true);
         }
       });
+  }
+
+  sortUsersByAge() {
+    this.users.update((state) => {
+      const sortOrder = this.listConfig.filters.age;
+      return [...state].sort((a, b) => sortOrder === 'asc' ? a.age - b.age : b.age - a.age);
+    });
+
+    this.listConfig.filters.age = this.listConfig.filters.age === 'asc' ? 'desc' : 'asc';
   }
 }

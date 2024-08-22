@@ -8,8 +8,8 @@ export interface IUser {
     first: string,
     last: string
   },
-  company: string,
-  email: string,
+  company?: string,
+  email?: string,
   address: string,
   tags: string[],
   favoriteFruit: string,
