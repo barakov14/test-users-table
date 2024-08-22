@@ -1,0 +1,31 @@
+<st-table>
+  <ng-container table-header>
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>Age</th>
+      <th>Company</th>
+      <th>Email</th>
+      <th>Address</th>
+      <th>Favorite Fruit</th>
+    </tr>
+  </ng-container>
+  <ng-container table-body>
+    @for(user of usersData?.users; track user._id) {
+      <tr>
+        <td>{{ user._id }}</td>
+        <td>{{ user.name.first }} {{ user.name.last }}</td>
+        <td>{{ user.age }}</td>
+        <td>{{ user.company }}</td>
+        <td>{{ user.email }}</td>
+        <td>{{ user.address }}</td>
+        <td>{{ user.favoriteFruit }}</td>
+      </tr>
+    } @empty {
+      <tr>
+        <td colspan="7">No users available</td>
+      </tr>
+    }
+    <!-- Add more rows as needed -->
+  </ng-container>
+</st-table>
