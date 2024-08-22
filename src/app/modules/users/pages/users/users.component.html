@@ -3,10 +3,11 @@
     stInput
     type="text"
     placeholder="Search users"
+    [formControl]="searchUsersTerm"
   >
 
   @defer (when usersLoaded()) {
-    <st-users-table [users]="users"></st-users-table>
+    <st-users-table [users]="users()"></st-users-table>
   }
 
   @placeholder {

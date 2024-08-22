@@ -6,7 +6,7 @@ export interface IUser {
   age: number,
   name?: {
     first: string,
-    last: string ,
+    last: string
   },
   company: string,
   email: string,
