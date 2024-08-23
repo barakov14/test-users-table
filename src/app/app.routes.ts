@@ -6,5 +6,9 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./modules/users/pages/users/users.component')
         .then(c => c.UsersComponent)
+  },
+  {
+    path: '**',
+    redirectTo: 'my'
   }
 ];

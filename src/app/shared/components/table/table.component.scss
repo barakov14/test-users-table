@@ -7,61 +7,81 @@ $table-border-color: #dee2e6;
 $table-border-radius: 10px;
 $table-shadow-color: rgba(0, 0, 0, 0.05);
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  background-color: #ffffff;
-  border-radius: $table-border-radius;
-  overflow: hidden;
-
-  thead {
-    background-color: $table-header-bg;
-    color: $table-header-color;
-
-    th {
-      padding: 12px 20px;
-      text-align: left;
-      border-bottom: 1px solid $table-border-color;
-      font-weight: 600;
-      font-size: 16px;
-      letter-spacing: 0.5px;
-    }
+:host::ng-deep {
+  .table-container {
+    -webkit-overflow-scrolling: touch;
+    margin: 0 -15px;
   }
 
-  tbody {
-    tr {
-      &:nth-child(odd) {
-        background-color: $table-row-bg;
-      }
+  table {
+    border-collapse: collapse;
+    background-color: #ffffff;
+    border-radius: $table-border-radius;
+    overflow-x: auto;
 
-      &:nth-child(even) {
-        background-color: $table-row-alt-bg;
-      }
+    width: 100%;
 
-      &:hover {
-        background-color: $table-row-hover-bg;
+    thead {
+      background-color: $table-header-bg;
+      color: $table-header-color;
+
+      th {
+        padding: 12px 20px;
+        text-align: left;
+        border-bottom: 1px solid $table-border-color;
+        font-weight: 600;
+        font-size: 16px;
+        letter-spacing: 0.5px;
       }
+    }
+
+    tbody {
+      tr {
+        &:nth-child(odd) {
+          background-color: $table-row-bg;
+        }
+
+        &:nth-child(even) {
+          background-color: $table-row-alt-bg;
+        }
+
+        &:hover {
+          background-color: $table-row-hover-bg;
+        }
+
+        td {
+          padding: 12px 20px;
+          border-bottom: 1px solid $table-border-color;
+          text-align: left;
+          font-size: 14px;
+          color: #495057;
+        }
+      }
+    }
+
+    tfoot {
+      background-color: $table-header-bg;
+      color: $table-header-color;
 
       td {
         padding: 12px 20px;
-        border-bottom: 1px solid $table-border-color;
         text-align: left;
-        font-size: 14px;
-        color: #495057;
+        font-weight: 600;
+        font-size: 16px;
+        border-top: 1px solid $table-border-color;
       }
     }
   }
+  @media (max-width: 768px) {
+    .table-container {
+      margin: 0;
+    }
 
-  tfoot {
-    background-color: $table-header-bg;
-    color: $table-header-color;
-
-    td {
-      padding: 12px 20px;
-      text-align: left;
-      font-weight: 600;
-      font-size: 16px;
-      border-top: 1px solid $table-border-color;
+    th, td {
+      font-size: 12px;
+      padding: 8px 12px;
     }
   }
 }
+
+
