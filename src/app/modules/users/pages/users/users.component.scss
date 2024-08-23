@@ -12,3 +12,10 @@
   display: flex;
   justify-content: space-between;
 }
+.users {
+  flex-direction: column;
+}
+.pagination {
+  margin-top: 0.5rem;
+  align-self: flex-end;
+}

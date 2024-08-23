@@ -1,0 +1,58 @@
+.container {
+  display: flex;
+  align-items: center;
+}
+
+.select {
+  display: flex;
+  align-items: center;
+  margin-left: 1rem;
+  p {
+    margin-right: 0.5rem;
+  }
+}
+
+ul {
+  list-style: none;
+  display: flex;
+
+  li {
+    padding: 0.3rem 0.6rem;
+    cursor: pointer;
+    border-radius: 50%;
+    text-align: center;
+
+    &:not(:last-child) {
+      margin-right: 0.7rem;
+    }
+    &:not(.active):hover {
+      background-color: #ccc;
+    }
+  }
+}
+
+.active {
+  color: #fff;
+  background-color: #3300FF;
+}
+
+
+select {
+  padding: 0.5rem;
+  font-size: 1rem;
+  color: #333;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  outline: none;
+
+  &:hover {
+    border-color: #999;
+  }
+
+  &:focus {
+    border-color: #666;
+  }
+}
+

@@ -11,9 +11,12 @@ export const usersMockInterceptor = (
     // Извлекаем параметры из запроса
     const params = request.params;
     const searchTermByName = params.get('searchTermByName');
+    const offset = parseInt(params.get('offset') || '0', 10);
+    const limit = parseInt(params.get('limit') || '10', 10); // По умолчанию 10 элементов
 
     let filteredUsers = usersMock;
 
+    // Фильтрация по имени
     if (searchTermByName) {
       const searchLowerCase = searchTermByName.toLowerCase();
       filteredUsers = filteredUsers.filter(user =>
@@ -22,10 +25,20 @@ export const usersMockInterceptor = (
       );
     }
 
-    return of(new HttpResponse({ status: 200, body: { users: filteredUsers, usersCount: filteredUsers.length } })).pipe(
-      delay(200) // Задержка http запроса на 300мс
+    // Применение пагинации
+    const paginatedUsers = filteredUsers.slice(offset, offset + limit);
+
+    return of(new HttpResponse({
+      status: 200,
+      body: {
+        users: paginatedUsers,
+        usersCount: filteredUsers.length // Общее количество пользователей после фильтрации
+      }
+    })).pipe(
+      delay(200) // Задержка http запроса на 200мс
     );
   }
+
 
   return next(request);
 }

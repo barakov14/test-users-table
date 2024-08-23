@@ -1,0 +1,33 @@
+<div class="container">
+  <ul>
+    <li
+      (click)="onChangePage(currentPage - 1)"
+      [class.disabled]="currentPage === 1"
+    >
+      <i class="ri-arrow-drop-left-line"></i>
+    </li>
+    @for (page of getPagesCount(); track page) {
+      <li
+        (click)="onChangePage(page)"
+        [ngClass]="currentPage === page ? 'active' : ''"
+      >{{ page }}</li>
+    }
+    <li
+      (click)="onChangePage(currentPage + 1)"
+      [class.disabled]="currentPage === totalPages"
+    >
+      <i class="ri-arrow-drop-right-line"></i>
+    </li>
+  </ul>
+
+
+  <div class="select">
+    <p>Items per page</p>
+    <select name="Items per page">
+      <option value="10">10</option>
+      <option value="15">15</option>
+      <option value="25">25</option>
+      <option value="30">30</option>
+    </select>
+  </div>
+</div>

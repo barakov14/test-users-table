@@ -5,10 +5,12 @@ import {AsyncPipe} from "@angular/common";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {ProgressSpinnerComponent} from "../../../../shared/components/progress-spinner/progress-spinner.component";
 import {InputDirective} from "../../../../shared/directives/input/input.directive";
-import {IUser, UsersModel} from "../../models/users.model";
+import {UsersModel} from "../../models/users.model";
 import {FormControl, ReactiveFormsModule} from "@angular/forms";
-import {debounceTime, filter, Observable, switchMap} from "rxjs";
+import {debounceTime, switchMap, tap} from "rxjs";
 import {UsersConfig} from "../../models/users-config.model";
+import {PaginationComponent} from "../../../../shared/components/pagination/pagination.component";
+import {ActivatedRoute, Router} from "@angular/router";
 
 @Component({
   selector: 'app-users',
@@ -18,7 +20,8 @@ import {UsersConfig} from "../../models/users-config.model";
     AsyncPipe,
     ProgressSpinnerComponent,
     InputDirective,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    PaginationComponent
   ],
   templateUrl: './users.component.html',
   styleUrl: './users.component.scss',
@@ -27,51 +30,70 @@ import {UsersConfig} from "../../models/users-config.model";
 export class UsersComponent implements OnInit {
   private readonly usersService = inject(UsersService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
 
   listConfig: UsersConfig = {
     filters: {
       searchTermByName: '',
-      age: 'asc'
+      age: 'asc',
+      limit: 10,
+      offset: 0
     }
   };
 
-  users= signal<UsersModel>([]);
+  users = signal<UsersModel>([]);
+  usersCount = 0;
 
-  usersCount: number = 0;
-
-  searchUsersTerm = new FormControl('') as FormControl<string>;
+  searchUsersTerm = new FormControl<string>('');
 
   usersLoaded = signal<boolean>(false);
 
   constructor() {
+    this.route.queryParams.pipe(
+      tap((param) => {
+        this.listConfig.filters.offset = param['page'] ? Number(param['page']) - 1 : 0;
+        this.listConfig.filters.limit = param['limit'] ? Number(param['limit']) : 10;
+      }),
+      switchMap(() => this.usersService.fetchUsers(this.listConfig)),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
+      next: (res) => {
+        this.users.set(res.users);
+        this.usersCount = res.usersCount;
+        this.usersLoaded.set(true);
+      },
+      error: (err) => console.log('Error:', err)
+    });
+
     this.searchUsersTerm.valueChanges.pipe(
       debounceTime(300),
       switchMap(term => {
-        this.listConfig.filters.searchTermByName = term;
+        this.listConfig.filters.searchTermByName = term ?? '';
         return this.usersService.fetchUsers(this.listConfig);
       }),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: res => {
-        this.users.set(res.users)
+        this.users.set(res.users);
         this.usersCount = res.usersCount;
         this.usersLoaded.set(true);
       },
-      error: err => console.log('error', err)
+      error: err => console.log('Error:', err)
     });
   }
 
   ngOnInit() {
+    // Обработка инициализации и загрузки данных
     this.usersService.fetchUsers(this.listConfig)
-      .pipe(
-        takeUntilDestroyed(this.destroyRef)
-      )
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: res => {
-          this.users.set(res.users)
+          this.users.set(res.users);
           this.usersCount = res.usersCount;
           this.usersLoaded.set(true);
-        }
+        },
+        error: err => console.log('Error:', err)
       });
   }
 
@@ -83,4 +105,11 @@ export class UsersComponent implements OnInit {
 
     this.listConfig.filters.age = this.listConfig.filters.age === 'asc' ? 'desc' : 'asc';
   }
+
+  onChangePage(page: number) {
+    this.listConfig.filters.offset = page - 1;
+    this.router.navigate([], {queryParams: {page, limit: this.listConfig.filters.limit}, queryParamsHandling: 'merge'});
+  }
+
+  protected readonly Math = Math;
 }

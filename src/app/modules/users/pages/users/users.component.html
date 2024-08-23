@@ -11,10 +11,19 @@
   </div>
 
   @defer (when usersLoaded()) {
-    <st-users-table
-      [users]="users()"
-      (sortUsers)="sortUsersByAge()"
-    />
+    <div class="row users">
+      <st-users-table
+        [users]="users()"
+        (sortUsers)="sortUsersByAge()"
+      />
+
+      <st-pagination
+        class="pagination"
+        [totalPages]="Math.ceil(usersCount / (listConfig.filters.limit ?? 1))"
+        (changePage)="onChangePage($event)"
+        [currentPage]="(listConfig.filters.offset ?? 0) + 1"
+      />
+    </div>
   }
 
   @placeholder {
