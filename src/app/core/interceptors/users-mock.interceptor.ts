@@ -13,6 +13,7 @@ export const usersMockInterceptor = (
     const offset = parseInt(params.get('offset') || '0', 10);
     const limit = parseInt(params.get('limit') || '10', 10); // По умолчанию 10 элементов
     const excludeKeys = params.get('excludeKeys') ? params.get('excludeKeys')!.split(',') : [];
+    const sortOrder = params.get('sortOrder') || 'asc'; // Порядок сортировки, по умолчанию 'asc'
 
     let filteredUsers = usersMock;
 
@@ -36,6 +37,17 @@ export const usersMockInterceptor = (
       }, {} as any);
     });
 
+    // Сортировка по возрасту
+    sanitizedUsers.sort((a, b) => {
+      const ageA = a.age || 0; // Обработка случая, если `age` отсутствует
+      const ageB = b.age || 0;
+      if (sortOrder === 'asc') {
+        return ageA - ageB;
+      } else {
+        return ageB - ageA;
+      }
+    });
+
     // Пагинация
     const paginatedUsers = sanitizedUsers.slice(offset, offset + limit);
 
@@ -49,6 +61,7 @@ export const usersMockInterceptor = (
       delay(200) // Задержка http запроса на 200мс
     );
   }
+
 
 
   return next(request);

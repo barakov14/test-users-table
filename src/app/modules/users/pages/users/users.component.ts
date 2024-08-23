@@ -43,7 +43,7 @@ export class UsersComponent implements OnInit {
   listConfig: UsersConfig = {
     filters: {
       searchTermByName: '',
-      age: 'asc',
+      sortOrder: 'default',
       limit: 10,
       offset: 0,
       excludeKeys: []
@@ -126,12 +126,17 @@ export class UsersComponent implements OnInit {
   }
 
   sortUsersByAge() {
-    this.users.update((state) => {
-      const sortOrder = this.listConfig.filters.age;
-      return [...state].sort((a, b) => sortOrder === 'asc' ? a.age - b.age : b.age - a.age);
-    });
+    this.listConfig.filters.sortOrder = this.listConfig.filters.sortOrder === 'asc' ? 'desc' : 'asc';
 
-    this.listConfig.filters.age = this.listConfig.filters.age === 'asc' ? 'desc' : 'asc';
+    this.usersService.fetchUsers(this.listConfig)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: res => {
+          this.users.set(res.users);
+          this.usersCount = res.usersCount;
+        },
+        error: err => console.log('Error:', err)
+      });
   }
 
   onChangePage(page: number) {
