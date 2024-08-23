@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, DestroyRef, inject, NgZone, OnInit, signal} from '@angular/core';
 import {UsersTableComponent} from "../../components/users-table/users-table.component";
 import {UsersService} from "../../services/users.service";
 import {AsyncPipe} from "@angular/common";
@@ -39,6 +39,7 @@ export class UsersComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly ngZone = inject(NgZone)
 
   listConfig: UsersConfig = {
     filters: {
@@ -142,6 +143,12 @@ export class UsersComponent implements OnInit {
   onChangePage(page: number) {
     this.listConfig.filters.offset = page - 1;
     this.router.navigate([], {queryParams: {page}, queryParamsHandling: 'merge'});
+
+    this.ngZone.runOutsideAngular(() => {
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+      }, 200);
+    })
   }
 
   onChangeLimit(limit: number) {
