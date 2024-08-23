@@ -52,8 +52,8 @@ export class UsersComponent implements OnInit {
   constructor() {
     this.route.queryParams.pipe(
       tap((param) => {
-        this.listConfig.filters.offset = param['page'] ? Number(param['page']) - 1 : 0;
         this.listConfig.filters.limit = param['limit'] ? Number(param['limit']) : 10;
+        this.listConfig.filters.offset = (Number(param['page']) - 1) * this.listConfig.filters.limit;
       }),
       switchMap(() => this.usersService.fetchUsers(this.listConfig)),
       takeUntilDestroyed(this.destroyRef)
@@ -95,6 +95,11 @@ export class UsersComponent implements OnInit {
         },
         error: err => console.log('Error:', err)
       });
+  }
+
+  get currentPage(): number {
+    // @ts-ignore
+    return Math.floor(this.listConfig.filters.offset / this.listConfig.filters.limit) + 1;
   }
 
   sortUsersByAge() {

@@ -25,14 +25,13 @@ export const usersMockInterceptor = (
       );
     }
 
-    // Применение пагинации
     const paginatedUsers = filteredUsers.slice(offset, offset + limit);
 
     return of(new HttpResponse({
       status: 200,
       body: {
         users: paginatedUsers,
-        usersCount: filteredUsers.length // Общее количество пользователей после фильтрации
+        usersCount: filteredUsers.length
       }
     })).pipe(
       delay(200) // Задержка http запроса на 200мс
