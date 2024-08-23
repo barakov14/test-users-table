@@ -30,8 +30,8 @@ export class PaginationComponent {
     }
   }
 
-  onChangeLimit(limit: number) {
-    this.changeLimit.emit(limit)
+  onChangeLimit(event: Event) {
+    const target = event.target as HTMLSelectElement;
+    this.changeLimit.emit(Number(target.value));
   }
-
 }

@@ -23,7 +23,7 @@
 
   <div class="select">
     <p>Items per page</p>
-    <select name="Items per page">
+    <select name="Items per page" (change)="onChangeLimit($event)">
       <option value="10">10</option>
       <option value="15">15</option>
       <option value="25">25</option>

@@ -108,7 +108,12 @@ export class UsersComponent implements OnInit {
 
   onChangePage(page: number) {
     this.listConfig.filters.offset = page - 1;
-    this.router.navigate([], {queryParams: {page, limit: this.listConfig.filters.limit}, queryParamsHandling: 'merge'});
+    this.router.navigate([], {queryParams: {page}, queryParamsHandling: 'merge'});
+  }
+
+  onChangeLimit(limit: number) {
+    this.listConfig.filters.limit = limit
+    this.router.navigate([], {queryParams: {limit: this.listConfig.filters.limit}, queryParamsHandling: 'merge'});
   }
 
   protected readonly Math = Math;

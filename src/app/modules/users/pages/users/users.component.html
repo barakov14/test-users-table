@@ -21,6 +21,7 @@
         class="pagination"
         [totalPages]="Math.ceil(usersCount / (listConfig.filters.limit ?? 1))"
         (changePage)="onChangePage($event)"
+        (changeLimit)="onChangeLimit($event)"
         [currentPage]="(listConfig.filters.offset ?? 0) + 1"
       />
     </div>
