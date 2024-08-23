@@ -8,7 +8,7 @@ import {Directive, ElementRef, inject, OnInit, Renderer2} from "@angular/core";
 export class InputDirective implements OnInit {
 
   private readonly renderer = inject(Renderer2)
-  private readonly elementRef = inject(ElementRef)
+  private readonly elementRef: ElementRef<HTMLInputElement> = inject(ElementRef)
 
   ngOnInit() {
     const el = this.elementRef.nativeElement
@@ -19,5 +19,6 @@ export class InputDirective implements OnInit {
     this.renderer.setStyle(el, 'border-radius', '4px');
     this.renderer.setStyle(el, 'outline', 'none');
     this.renderer.setStyle(el, 'transition', 'border-color 0.3s ease');
+
   }
 }

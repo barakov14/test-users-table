@@ -1,12 +1,31 @@
 <div class="container">
   <div class="row">
-    <input
-      stInput
-      class="search-input"
-      type="text"
-      placeholder="Search users by their name or surname"
-      [formControl]="searchUsersTerm"
-    >
+    <div class="filters">
+      <input
+        stInput
+        class="search-input"
+        type="text"
+        placeholder="Search users by their name or surname"
+        [formControl]="searchUsersTerm"
+      >
+      <button stIconButton cdkMenuItem [cdkMenuTriggerFor]="menu" class="standalone-trigger">
+        <i class="ri-filter-2-fill"></i>
+      </button>
+
+      <ng-template #menu>
+        <div class="menu" cdkMenu>
+          @for(key of userKeys; track key) {
+            <div class="menu-item">
+              <input
+                type="checkbox"
+                [checked]="!listConfig.filters.excludeKeys?.includes(key)"
+                (change)="onExcludeKeys(key, $event)">
+              {{ key }}
+            </div>
+          }
+        </div>
+      </ng-template>
+    </div>
     <p class="users-count">{{ usersCount }} users found.</p>
   </div>
 
@@ -15,6 +34,8 @@
       <st-users-table
         [users]="users()"
         (sortUsers)="sortUsersByAge()"
+        [columns]="userKeys"
+        [excludedColumns]="listConfig.filters.excludeKeys ?? []"
       />
 
       <st-pagination
@@ -32,5 +53,4 @@
       <st-progress-spinner />
     </div>
   }
-
 </div>

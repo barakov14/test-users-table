@@ -1,0 +1,13 @@
+.icon-button {
+  border-radius: 1rem;
+  border: none;
+  padding: 0.5rem 0.6rem;
+  font-size: 1.2rem;
+  transition: background-color 0.3s;
+  cursor: pointer;
+  background: none;
+}
+
+.icon-button:hover {
+  background-color: #ccc;
+}

@@ -7,17 +7,17 @@ export const usersMockInterceptor = (
   next: HttpHandlerFn
 ): Observable<HttpEvent<any>> => {
   if (request.url.endsWith('/api/users')) {
-
     // Извлекаем параметры из запроса
     const params = request.params;
-    const searchTermByName = params.get('searchTermByName');
+    const searchTermByName = params.get('searchTermByName') || '';
     const offset = parseInt(params.get('offset') || '0', 10);
     const limit = parseInt(params.get('limit') || '10', 10); // По умолчанию 10 элементов
+    const excludeKeys = params.get('excludeKeys') ? params.get('excludeKeys')!.split(',') : [];
 
     let filteredUsers = usersMock;
 
     // Фильтрация по имени
-    if (searchTermByName) {
+    if (searchTermByName.trim()) {
       const searchLowerCase = searchTermByName.toLowerCase();
       filteredUsers = filteredUsers.filter(user =>
         user.name?.first?.toLowerCase().includes(searchLowerCase) ||
@@ -25,7 +25,19 @@ export const usersMockInterceptor = (
       );
     }
 
-    const paginatedUsers = filteredUsers.slice(offset, offset + limit);
+    // Исключение определенных ключей
+    const sanitizedUsers = filteredUsers.map(user => {
+      return Object.keys(user).reduce((acc, key) => {
+        if (!excludeKeys.includes(key)) {
+          // @ts-ignore
+          acc[key] = user[key];
+        }
+        return acc;
+      }, {} as any);
+    });
+
+    // Пагинация
+    const paginatedUsers = sanitizedUsers.slice(offset, offset + limit);
 
     return of(new HttpResponse({
       status: 200,

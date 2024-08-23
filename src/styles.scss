@@ -1,7 +1,11 @@
 /* You can add global styles to this file, and also import other style files */
 
+@import "app/shared/directives/icon-button/icon-button.styles";
+@import '@angular/cdk/overlay-prebuilt.css';
+
 body {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
   font-family: "Roboto", sans-serif;
 }

@@ -7,10 +7,12 @@ import {ProgressSpinnerComponent} from "../../../../shared/components/progress-s
 import {InputDirective} from "../../../../shared/directives/input/input.directive";
 import {UsersModel} from "../../models/users.model";
 import {FormControl, ReactiveFormsModule} from "@angular/forms";
-import {debounceTime, switchMap, tap} from "rxjs";
+import {debounceTime, filter, switchMap, tap} from "rxjs";
 import {UsersConfig} from "../../models/users-config.model";
 import {PaginationComponent} from "../../../../shared/components/pagination/pagination.component";
 import {ActivatedRoute, Router} from "@angular/router";
+import {IconButtonDirective} from "../../../../shared/directives/icon-button/icon-button.directive";
+import {CdkMenu, CdkMenuItem, CdkMenuItemCheckbox, CdkMenuTrigger} from "@angular/cdk/menu";
 
 @Component({
   selector: 'app-users',
@@ -21,7 +23,12 @@ import {ActivatedRoute, Router} from "@angular/router";
     ProgressSpinnerComponent,
     InputDirective,
     ReactiveFormsModule,
-    PaginationComponent
+    PaginationComponent,
+    IconButtonDirective,
+    CdkMenuItem,
+    CdkMenuTrigger,
+    CdkMenu,
+    CdkMenuItemCheckbox,
   ],
   templateUrl: './users.component.html',
   styleUrl: './users.component.scss',
@@ -38,9 +45,24 @@ export class UsersComponent implements OnInit {
       searchTermByName: '',
       age: 'asc',
       limit: 10,
-      offset: 0
+      offset: 0,
+      excludeKeys: []
     }
   };
+
+  userKeys = [
+    "_id",
+    "isActive",
+    "balance",
+    "picture",
+    "age",
+    "name",
+    "company",
+    "email",
+    "address",
+    "tags",
+    "favoriteFruit"
+  ]
 
   users = signal<UsersModel>([]);
   usersCount = 0;
@@ -51,6 +73,7 @@ export class UsersComponent implements OnInit {
 
   constructor() {
     this.route.queryParams.pipe(
+      filter((param) => !!param['page'] || !!param['offset']),
       tap((param) => {
         this.listConfig.filters.limit = param['limit'] ? Number(param['limit']) : 10;
         this.listConfig.filters.offset = (Number(param['page']) - 1) * this.listConfig.filters.limit;
@@ -118,7 +141,36 @@ export class UsersComponent implements OnInit {
 
   onChangeLimit(limit: number) {
     this.listConfig.filters.limit = limit
-    this.router.navigate([], {queryParams: {limit: this.listConfig.filters.limit}, queryParamsHandling: 'merge'});
+    this.router.navigate([], {queryParams: {page: 1, limit: this.listConfig.filters.limit}, queryParamsHandling: 'merge'});
+  }
+
+  onExcludeKeys(key: string, event: Event): void {
+    const inputElement = event.target as HTMLInputElement;
+
+    if (!this.listConfig.filters.excludeKeys) {
+      this.listConfig.filters.excludeKeys = [];
+    }
+
+    const isChecked = inputElement.checked;
+
+    if (isChecked) {
+      this.listConfig.filters.excludeKeys = this.listConfig.filters.excludeKeys.filter(k => k !== key);
+    } else {
+      if (!this.listConfig.filters.excludeKeys.includes(key)) {
+        this.listConfig.filters.excludeKeys.push(key);
+      }
+    }
+
+    // Обновление списка пользователей после изменения excludeKeys
+    this.usersService.fetchUsers(this.listConfig)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: res => {
+          this.users.set(res.users);
+          this.usersCount = res.usersCount;
+        },
+        error: err => console.log('Error:', err)
+      });
   }
 
   protected readonly Math = Math;

@@ -4,5 +4,6 @@ export interface UsersConfig {
     age?: string;
     offset?: number;
     limit?: number;
+    excludeKeys?: string[]
   }
 }

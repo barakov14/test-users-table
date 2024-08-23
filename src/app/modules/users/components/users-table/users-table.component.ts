@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import {TableComponent} from "../../../../shared/components/table/table.component";
-import {AsyncPipe, NgClass, NgStyle} from "@angular/common";
+import {AsyncPipe, NgClass, NgIf, NgStyle} from "@angular/common";
 import {IUsers, UsersModel} from "../../models/users.model";
 import {SortableColumnDirective} from "../../../../shared/directives/sortable-column/sortable-column.directive";
 
@@ -12,7 +12,8 @@ import {SortableColumnDirective} from "../../../../shared/directives/sortable-co
     AsyncPipe,
     NgClass,
     NgStyle,
-    SortableColumnDirective
+    SortableColumnDirective,
+    NgIf
   ],
   templateUrl: './users-table.component.html',
   styleUrl: './users-table.component.scss',
@@ -22,9 +23,22 @@ export class UsersTableComponent {
   @Input() users: UsersModel | null = null
   @Output() sortUsers = new EventEmitter<void>()
 
-  columns: string[] = []
+  @Input() columns: string[] = []
+
+  @Input() excludedColumns: string[] = []
 
   onSortUsersByAge() {
     this.sortUsers.emit()
   }
+
+  get columnsIncluded(): string[] {
+    return this.columns.filter((column) => !this.excludedColumns.includes(column))
+  }
+
+
+  isColumnExcluded(key: string) {
+    return this.excludedColumns.includes(key)
+  }
+
+  protected readonly Object = Object;
 }

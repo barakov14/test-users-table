@@ -1,25 +1,37 @@
 <st-table>
   <ng-container table-header>
     <tr>
-      <th>ID</th>
-      <th>Name</th>
-      <th stSortableColumn style="cursor: pointer" (click)="onSortUsersByAge()">Age</th>
-      <th>Company</th>
-      <th>Email</th>
-      <th>Address</th>
-      <th>Favorite fruit</th>
+      @for(column of columnsIncluded; track column) {
+        @if(column ==='age') {
+          <th stSortableColumn style="cursor: pointer" (click)="onSortUsersByAge()">{{ column }}</th>
+        } @else {
+          <th>{{ column }}</th>
+        }
+      }
     </tr>
   </ng-container>
   <ng-container table-body>
     @for(user of users; track user._id) {
       <tr>
-        <td>{{ user._id }}</td>
-        <td>{{ user.name?.first || '' }} {{ user.name?.last || '' }}</td>
-        <td>{{ user.age }}</td>
-        <td>{{ user.company }}</td>
-        <td>{{ user.email }}</td>
-        <td>{{ user.address }}</td>
-        <td>{{ user.favoriteFruit }}</td>
+        <td *ngIf="!isColumnExcluded('_id')">{{ user._id }}</td>
+        <td *ngIf="!isColumnExcluded('isActive')">{{ user.isActive }}</td>
+        <td *ngIf="!isColumnExcluded('balance')">{{ user.balance }}</td>
+        <td *ngIf="!isColumnExcluded('picture')">
+          <img [src]="user.picture" style="width: 32px; height: 32px">
+        </td>
+        <td *ngIf="!isColumnExcluded('age')">{{ user.age }}</td>
+        <td *ngIf="!isColumnExcluded('name')">
+          {{ user.name?.first || '' }} {{ user.name?.last || '' }}
+        </td>
+        <td *ngIf="!isColumnExcluded('company')">{{ user.company }}</td>
+        <td *ngIf="!isColumnExcluded('email')">{{ user.email }}</td>
+        <td *ngIf="!isColumnExcluded('address')">{{ user.address }}</td>
+        <td *ngIf="!isColumnExcluded('tags')">
+          @for (tag of user.tags; track tag) {
+            <span>{{ tag }}, </span>
+          }
+        </td>
+        <td *ngIf="!isColumnExcluded('favoriteFruit')">{{ user.favoriteFruit }}</td>
       </tr>
     } @empty {
       <tr>
