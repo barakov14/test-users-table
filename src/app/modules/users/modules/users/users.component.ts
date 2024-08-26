@@ -1,18 +1,19 @@
 import {ChangeDetectionStrategy, Component, DestroyRef, inject, NgZone, OnInit, signal} from '@angular/core';
-import {UsersTableComponent} from "../../components/users-table/users-table.component";
-import {UsersService} from "../../services/users.service";
+import {UsersTableComponent} from "@modules/users/components/users-table/users-table.component";
+import {UsersService} from "@modules/users/services/users.service";
 import {AsyncPipe} from "@angular/common";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import {ProgressSpinnerComponent} from "../../../../shared/components/progress-spinner/progress-spinner.component";
-import {InputDirective} from "../../../../shared/directives/input/input.directive";
-import {UsersModel} from "../../models/users.model";
+import {ProgressSpinnerComponent} from "@shared/components/progress-spinner/progress-spinner.component";
+import {InputDirective} from "@shared/directives/input/input.directive";
+import {IUsers, UsersModel} from "@modules/users/models/users.model";
 import {FormControl, ReactiveFormsModule} from "@angular/forms";
-import {debounceTime, filter, switchMap, tap} from "rxjs";
-import {UsersConfig} from "../../models/users-config.model";
-import {PaginationComponent} from "../../../../shared/components/pagination/pagination.component";
+import {debounceTime, filter, Observable, switchMap, tap} from "rxjs";
+import { UsersConfig } from '@modules/users/models/users-config.model';
+import {PaginationComponent} from "@shared/components/pagination/pagination.component";
 import {ActivatedRoute, Router} from "@angular/router";
-import {IconButtonDirective} from "../../../../shared/directives/icon-button/icon-button.directive";
+import {IconButtonDirective} from "@shared/directives/icon-button/icon-button.directive";
 import {CdkMenu, CdkMenuItem, CdkMenuItemCheckbox, CdkMenuTrigger} from "@angular/cdk/menu";
+import { listConfig, userKeys } from '@modules/users/models/users.consts';
 
 @Component({
   selector: 'app-users',
@@ -35,91 +36,64 @@ import {CdkMenu, CdkMenuItem, CdkMenuItemCheckbox, CdkMenuTrigger} from "@angula
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UsersComponent implements OnInit {
+
+  // Обьявление переменных, асинк-штучек, и инъекцию сервисов расположил по порядку сверху
+
+  protected readonly Math = Math;
+
+  usersCount = 0;
+  listConfig: UsersConfig = listConfig;
+  userKeys: string[] = userKeys;
+
+  searchUsersTerm = new FormControl<string>('');
+
+  users = signal<UsersModel>([]);
+  usersLoaded = signal<boolean>(false);
+
   private readonly usersService = inject(UsersService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly ngZone = inject(NgZone)
 
-  listConfig: UsersConfig = {
-    filters: {
-      searchTermByName: '',
-      sortOrder: 'default',
-      limit: 10,
-      offset: 0,
-      excludeKeys: []
-    }
-  };
 
-  userKeys = [
-    "_id",
-    "isActive",
-    "balance",
-    "picture",
-    "age",
-    "name",
-    "company",
-    "email",
-    "address",
-    "tags",
-    "favoriteFruit"
-  ]
+  constructor() {}
+  // Убрал нафиг из конструктора инициализирующую логику.
+  // Вынес эту логику с init-методы, которые вызвал в ngOnInit
+  ngOnInit() {
+    this.initListeners();
+    this.initFetch();
+  }
 
-  users = signal<UsersModel>([]);
-  usersCount = 0;
 
-  searchUsersTerm = new FormControl<string>('');
-
-  usersLoaded = signal<boolean>(false);
-
-  constructor() {
+  private initListeners(): void {
     this.route.queryParams.pipe(
       filter((param) => !!param['page'] || !!param['offset']),
       tap((param) => {
         this.listConfig.filters.limit = param['limit'] ? Number(param['limit']) : 10;
         this.listConfig.filters.offset = (Number(param['page']) - 1) * this.listConfig.filters.limit;
       }),
-      switchMap(() => this.usersService.fetchUsers(this.listConfig)),
+      switchMap(() => this.loadUsers$()),
       takeUntilDestroyed(this.destroyRef)
-    ).subscribe({
-      next: (res) => {
-        this.users.set(res.users);
-        this.usersCount = res.usersCount;
-        this.usersLoaded.set(true);
-      },
-      error: (err) => console.log('Error:', err)
-    });
+    ).subscribe(() => this.usersLoaded.set(true));
 
     this.searchUsersTerm.valueChanges.pipe(
       debounceTime(300),
       switchMap(term => {
         this.listConfig.filters.searchTermByName = term ?? '';
-        return this.usersService.fetchUsers(this.listConfig);
+        return this.loadUsers$();
       }),
       takeUntilDestroyed(this.destroyRef)
-    ).subscribe({
-      next: res => {
-        this.users.set(res.users);
-        this.usersCount = res.usersCount;
-        this.usersLoaded.set(true);
-      },
-      error: err => console.log('Error:', err)
-    });
+    ).subscribe(() => this.usersLoaded.set(true));
+
   }
 
-  ngOnInit() {
-    // Обработка инициализации и загрузки данных
-    this.usersService.fetchUsers(this.listConfig)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: res => {
-          this.users.set(res.users);
-          this.usersCount = res.usersCount;
-          this.usersLoaded.set(true);
-        },
-        error: err => console.log('Error:', err)
-      });
+  private initFetch(): void {
+    this.loadUsers$().subscribe(() => {
+      this.usersLoaded.set(true);
+    } )
   }
+
 
   get currentPage(): number {
     // @ts-ignore
@@ -128,16 +102,7 @@ export class UsersComponent implements OnInit {
 
   sortUsersByAge() {
     this.listConfig.filters.sortOrder = this.listConfig.filters.sortOrder === 'asc' ? 'desc' : 'asc';
-
-    this.usersService.fetchUsers(this.listConfig)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: res => {
-          this.users.set(res.users);
-          this.usersCount = res.usersCount;
-        },
-        error: err => console.log('Error:', err)
-      });
+    this.loadUsers$();
   }
 
   onChangePage(page: number) {
@@ -173,17 +138,23 @@ export class UsersComponent implements OnInit {
       }
     }
 
-    // Обновление списка пользователей после изменения excludeKeys
-    this.usersService.fetchUsers(this.listConfig)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: res => {
-          this.users.set(res.users);
-          this.usersCount = res.usersCount;
-        },
-        error: err => console.log('Error:', err)
-      });
+    this.loadUsers$();
   }
 
-  protected readonly Math = Math;
+  // часто ты вызывал эту фунцкцию из сервиса.
+  // Я его вынес в отдельны метод - убрал копипасту.
+
+  private loadUsers$(): Observable<IUsers> {
+    return this.usersService.fetchUsers(this.listConfig)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        tap(({users, usersCount}) => {
+          this.users.set(users);
+          this.usersCount = usersCount;
+        })
+      )
+  }
+
 }
+
+// Я бы накрутил отдельный сервис и как можно больше логики вынес бы туда
