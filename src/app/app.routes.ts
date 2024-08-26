@@ -4,7 +4,7 @@ export const routes: Routes = [
   {
     path: 'my',
     loadComponent: () =>
-      import('./modules/users/pages/users/users.component')
+      import('./modules/users/modules/users/users.component')
         .then(c => c.UsersComponent)
   },
   {
